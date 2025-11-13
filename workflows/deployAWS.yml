@@ -1,0 +1,75 @@
+#Ryan Lambert (c3397980) SENG4400 Assignment 2 CI/CD Setup
+
+name: Run Tests and Deploy AWS Lambda & Frontend Functions
+
+on:
+  push:
+    branches:
+      - main  #Deploys only when pushed to main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      #Runs some basic tests during Integration (CI)  
+      - name: Run tests
+        run: npm test
+        
+
+      #AWS access credentials, keys need to be updated after each new session 
+      - name: Configure AWS credentials
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set aws_session_token ${{ secrets.AWS_SESSION_TOKEN }}
+          aws configure set region us-east-1 
+
+
+      #Deploys frontend (CD)
+      - name: Deploy Frontend to S3
+        run: |
+          aws s3 sync frontend/ s3://studyplannerapp --delete
+   
+      #Deploys all backend functions (CD)
+      - name: Deploy createReminder Lambda
+        run: |
+          cd lambdaFunctions/createReminder
+          zip -r function.zip .
+          aws lambda update-function-code --function-name createReminder --zip-file fileb://function.zip
+
+      - name: Deploy deleteReminder Lambda
+        run: |
+          cd lambdaFunctions/deleteReminder
+          zip -r function.zip .
+          aws lambda update-function-code --function-name deleteReminder --zip-file fileb://function.zip
+          
+      - name: Deploy getReminder Lambda
+        run: |
+          cd lambdaFunctions/getReminder
+          zip -r function.zip .
+          aws lambda update-function-code --function-name getReminder --zip-file fileb://function.zip
+          
+      - name: Deploy updateReminder Lambda
+        run: |
+          cd lambdaFunctions/updateReminder
+          zip -r function.zip .
+          aws lambda update-function-code --function-name updateReminder --zip-file fileb://function.zip    
+
+      - name: Deploy sendNotification Lambda
+        run: |
+          cd lambdaFunctions/sendNotification
+          zip -r function.zip .
+          aws lambda update-function-code --function-name sendNotification --zip-file fileb://function.zip     
+
