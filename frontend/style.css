@@ -1,0 +1,218 @@
+/* Ryan Lambert (c3397980) SENG4400 Styling (mostly copied from my other current project) */
+
+
+/* GLOBAL STYLE */
+body {
+  background-color: #434648;
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+/* PAGE TITLE */
+h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* FORM STYLING */
+#reminder-form{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  max-width: 450px;
+  align-items: center;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+#reminder-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  max-width: 600px;
+  align-items: center;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 2rem;
+}
+
+.form-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.reminder-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+input[type="text"] {
+  margin-right: 5px;
+}
+
+/* INPUT STYLING */
+#reminder-form input {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #cccccc;
+  background-color: transparent;
+  transition: border-color 0.3s ease;
+}
+
+#reminder-form input:hover {
+  border-color: #007BFF;
+  background-color: rgba(0, 123, 255, 0.05);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+#reminder-form input::placeholder {
+  color: #aaa;
+}
+
+/* SUBMIT BUTTON */
+#reminder-form button[type="submit"] {
+  background-color: #007BFF;
+  color: white;
+  padding: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  justify-content: center;
+  align-items: center;
+}
+
+.reminder-core button {
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  margin: 0 4px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.reminder-core button:hover {
+  background-color: #333;
+}
+
+#reminder-form button[type="submit"]:hover {
+  background-color: #2563eb;
+}
+
+/* LOAD BUTTON */
+#load-reminders {
+  background-color: #007BFF;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+#load-reminders:hover {
+  background-color: #2563eb;
+}
+
+/* REMINDER LIST */
+#reminder-list {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* INDIVIDUAL REMINDER ITEM */
+#reminder-list div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid #e0e0e0;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+#reminder-list div:hover {
+  background-color: rgba(240, 248, 255, 0.7);
+}
+
+/* REMINDER TEXT */
+#reminder-list span {
+  font-size: 1rem;
+  font-weight: 500;
+  color: black;
+}
+
+/* BUTTONS INSIDE LIST */
+#reminder-list button {
+  background-color: transparent;
+  border: none;
+  color: #007BFF;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: underline;
+  margin-left: 1rem;
+}
+
+#reminder-list button:hover {
+  color: #2563eb;
+}
+
+.progress-tracker {
+  background-color: #589bb9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.progress-tracker input[type="range"] {
+  width: 100%;
+}
+
+.progress-tracker button {
+  margin-top: 0.5rem;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+}

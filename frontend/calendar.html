@@ -1,0 +1,211 @@
+<!--Ryan Lambert (c3397980) SENG4400 Assignment 2 Calendar page-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Calendar</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <div class="form-container"></div>
+  <div id="reminder-form">
+
+    <h2>Create Reminder</h2>
+    <form>
+      <input type="date" id="date" required />
+      <input type="text" id="task" placeholder="Task" required />
+      <button type="submit">Create Reminder</button>
+    </form>
+  </div>
+
+  <div id="reminder-actions">
+    <h2>Load My Reminders</h2>
+    <button id="load-reminders">Load My Reminders</button>
+    <div id="reminder-list" style="display: none;"></div>
+  </div>
+
+  </div>
+  <script>
+  const form = document.getElementById('reminder-form');
+  const list = document.getElementById('reminder-list');
+  const userID = "test1";
+  const loadBtn = document.getElementById('load-reminders');
+  let remindersVisible = false;
+
+  loadBtn.addEventListener('click', async () => 
+  {
+    if (!remindersVisible) 
+    {
+      try 
+      {
+        const reminders = await getReminder(userID);
+        console.log("Reminders fetched:", reminders);
+
+        list.innerHTML = '';
+        reminders.forEach(r => 
+        {
+          const item = document.createElement('div');
+          item.className = 'reminder-item';
+          item.innerHTML = `
+          <div class="reminder-core">
+            <input type="text" value="${r.title}" id="title-${r.dueDate}" />
+            <input type="date" value="${r.dueDate}" id="date-${r.dueDate}" />
+            <button onclick="handleUpdate('${r.dueDate}')">Update</button>
+            <button onclick="handleDelete('${r.dueDate}')">Delete</button>
+          </div>
+          
+          <div class="progress-tracker">
+           <label for="progress-${r.dueDate}"><strong>Current Progress</strong></label><br>
+           <input type="range" min="0" max="100" value="${r.progress || 0}" 
+           id="progress-${r.dueDate}" oninput="updateProgressText('${r.dueDate}')" />
+           <span id="progress-text-${r.dueDate}">${r.progress || 0}%</span>
+          </div>
+           `;
+            list.appendChild(item);
+          });
+
+          list.style.display = 'block';
+          loadBtn.textContent = 'Close Reminders';
+          remindersVisible = true;
+        } 
+          catch (err) 
+          {
+            console.error('Error fetching reminders:', err);
+          }
+        } 
+          else 
+          {
+            list.style.display = 'none';
+            loadBtn.textContent = 'Load My Reminders';
+            remindersVisible = false;
+          }
+      });
+
+    form.addEventListener('submit', async (e) => 
+    {
+      e.preventDefault();
+      const dueDate = document.getElementById('date').value;
+      const title = document.getElementById('task').value;
+
+      try 
+      {
+        const data = await createReminder(dueDate, title);
+        console.log("Reminder created:", data);
+        form.reset();
+         if (remindersVisible) loadBtn.click(); 
+         loadBtn.click(); 
+      }  
+        catch (err) 
+        {
+          console.error('Error creating reminder:', err);
+        }
+    });
+
+  //Four Reminder Functions
+  async function createReminder(dueDate, title) 
+  {
+    //The link will have to be changed if you wish to test yourself
+    const res = await fetch('https://u3podu7q15.execute-api.us-east-1.amazonaws.com/dev/reminders', 
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userID, title, dueDate })
+    });
+
+    return await res.json();
+  }
+
+  
+  async function getReminder(userID) 
+  {
+    const res = await fetch(`https://u3podu7q15.execute-api.us-east-1.amazonaws.com/dev/reminders?userID=${encodeURIComponent(userID)}`);
+    return await res.json();
+  }
+
+ 
+  async function deleteReminder(userID, dueDate) 
+  {
+    const res = await fetch(`https://u3podu7q15.execute-api.us-east-1.amazonaws.com/dev/reminders/${encodeURIComponent(userID)}/${encodeURIComponent(dueDate)}`,
+    {
+      method: 'DELETE',
+    });
+   return await res.json();
+  }
+
+
+  async function updateReminder(userID, oldDueDate, newDueDate, newTitle, progress) 
+  {
+    const res = await fetch(`https://u3podu7q15.execute-api.us-east-1.amazonaws.com/dev/reminders/${encodeURIComponent(userID)}/${encodeURIComponent(oldDueDate)}`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ newDueDate, title: newTitle, progress: parseInt(progress) })
+    });
+   return res.json();
+  }
+
+
+  //Calendar Logic
+  async function handleUpdate(oldDueDate)  
+  {
+    const newTitle = document.getElementById(`title-${oldDueDate}`).value;
+    const newDueDate = document.getElementById(`date-${oldDueDate}`).value;
+    const progress = document.getElementById(`progress-${oldDueDate}`).value;
+
+    try   
+    {
+      await updateReminder(userID, oldDueDate, newDueDate, newTitle, progress);
+      alert('Reminder updated');
+      loadBtn.click(); 
+      loadBtn.click();
+    }
+      catch (err) 
+      {
+        console.error('Error updating reminder:', err);
+      }
+   }
+
+    async function handleDelete(dueDate) 
+    {
+      try 
+      {
+        await deleteReminder(userID, dueDate);
+        alert('Reminder deleted');
+        loadBtn.click(); 
+        loadBtn.click();
+      } 
+        catch (err) 
+        {
+         console.error('Error deleting reminder:', err);
+        }
+    }
+
+    function updateProgressText(dueDate) 
+    {
+      const value = document.getElementById(`progress-${dueDate}`).value;
+      document.getElementById(`progress-text-${dueDate}`).textContent = `${value}%`;
+    }
+
+  //Form Submission
+  form.addEventListener('submit', async (e) =>
+  {
+    e.preventDefault();
+
+    const dueDate = document.getElementById('date').value;
+    const title = document.getElementById('task').value;
+
+    try 
+    {
+      await createReminder(dueDate, title);
+      form.reset();
+      document.getElementById('load-reminders').click();
+    } 
+      catch (err) 
+      {
+        console.error('Error creating reminder:', err);
+      }
+  });
+</script>
+</body>
+</html>
